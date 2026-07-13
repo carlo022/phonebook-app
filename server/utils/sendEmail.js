@@ -1,13 +1,20 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
-  // Use the built-in 'gmail' service instead of manual host/port
   const transporter = nodemailer.createTransport({
-    service: 'gmail', 
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // Forces SSL
     auth: {
       user: process.env.SMTP_EMAIL,
       pass: process.env.SMTP_PASSWORD,
     },
+    tls: {
+      // Do not fail on invalid certificates
+      rejectUnauthorized: false
+    },
+    // The magic line: Forces Node to use IPv4 instead of IPv6, preventing the 5-minute timeout!
+    family: 4 
   });
 
   const message = {
