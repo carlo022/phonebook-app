@@ -1,31 +1,28 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
+  // Create a transporter using your SMTP credentials
   const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // Forces SSL
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    secure: false, // true for port 465, false for port 587
     auth: {
       user: process.env.SMTP_EMAIL,
       pass: process.env.SMTP_PASSWORD,
     },
-    tls: {
-      // Do not fail on invalid certificates
-      rejectUnauthorized: false
-    },
-    // The magic line: Forces Node to use IPv4 instead of IPv6, preventing the 5-minute timeout!
-    family: 4 
   });
 
+  // Define the email payload
   const message = {
-    from: `"My Phonebook-App" <${process.env.SMTP_EMAIL}>`, 
+    from: `"My Phonebook-App" <${process.env.SMTP_EMAIL}>`,
     to: options.email,
     subject: options.subject,
     text: options.message,
   };
 
+  // Send the email
   const info = await transporter.sendMail(message);
-  console.log('✅ Real Email sent: %s', info.messageId);
+  console.log('✅ Email sent: %s', info.messageId);
 };
 
 module.exports = sendEmail;
