@@ -8,7 +8,11 @@ const { connectMySQL, sequelize } = require('./config/mysql');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL, // Allow requests from the Vite dev server
+  credentials: true, 
+}));
+
 app.use(express.json()); 
 
 // Initialize Databases
@@ -40,7 +44,7 @@ app.use('/api/users', userRoutes);
 const contactRoutes = require('./routes/contactRoutes');
 app.use('/api/contacts', contactRoutes);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
 });

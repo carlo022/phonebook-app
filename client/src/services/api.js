@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api', // Pointing to our Express backend
+  baseURL: import.meta.env.VITE_API_URL, // Pointing to our Express backend
 });
 
 // Intercept requests to attach the Bearer token
