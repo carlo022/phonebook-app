@@ -2,21 +2,40 @@ const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
   try {
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT, // Ensure this is 2525
-      secure: false,
-      auth: {
-        user: process.env.SMTP_LOGIN,
-        pass: process.env.SMTP_PASSWORD,
-      },
-      family: 4,
-      connectionTimeout: 10000, // Force timeout in 10s so you don't wait 4 minutes
-      socketTimeout: 10000 
-    });
+    let transporter;
+
+    // If SMTP env vars are not set (common in local dev), create a test account
+    const hasSMTP = process.env.SMTP_HOST && process.env.SMTP_LOGIN && process.env.SMTP_PASSWORD;
+
+    if (!hasSMTP) {
+      console.warn('⚠️ SMTP credentials missing - falling back to Ethereal test account for email delivery');
+      const testAccount = await nodemailer.createTestAccount();
+      transporter = nodemailer.createTransport({
+        host: 'smtp.ethereal.email',
+        port: 587,
+        secure: false,
+        auth: {
+          user: testAccount.user,
+          pass: testAccount.pass,
+        },
+      });
+    } else {
+      transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT, 10) || 587,
+        secure: (process.env.SMTP_SECURE === 'true') || false,
+        auth: {
+          user: process.env.SMTP_LOGIN,
+          pass: process.env.SMTP_PASSWORD,
+        },
+        family: 4,
+        connectionTimeout: 10000,
+        socketTimeout: 10000,
+      });
+    }
 
     const message = {
-      from: `"Polyglot Phonebook" <${process.env.SMTP_EMAIL}>`,
+      from: `"Polyglot Phonebook" <${process.env.SMTP_EMAIL || (process.env.SMTP_LOGIN || 'no-reply@example.com')}>`,
       to: options.email,
       subject: options.subject,
       text: options.message,
@@ -24,12 +43,17 @@ const sendEmail = async (options) => {
 
     const info = await transporter.sendMail(message);
     console.log('✅ Email sent successfully: %s', info.messageId);
-    return info;
 
+    // When using Ethereal/Test account, provide preview URL for debugging
+    if (nodemailer.getTestMessageUrl) {
+      const preview = nodemailer.getTestMessageUrl(info);
+      if (preview) console.log('🔗 Preview URL: %s', preview);
+    }
+
+    return info;
   } catch (error) {
-    // THIS IS THE MOST IMPORTANT LINE
-    console.error("❌ FULL EMAIL ERROR DETAILS:", error); 
-    throw error; // This ensures the API still returns the 500, but now you see the WHY in logs
+    console.error('❌ FULL EMAIL ERROR DETAILS:', error);
+    throw error;
   }
 };
 
