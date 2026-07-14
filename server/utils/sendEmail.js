@@ -4,12 +4,10 @@ const sendEmail = async (options) => {
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
-    secure: false, 
     auth: {
       user: process.env.SMTP_LOGIN, 
       pass: process.env.SMTP_PASSWORD,
     },
-    family: 4 
   });
 
   const message = {
