@@ -6,8 +6,8 @@ const sendEmail = async (options) => {
     port: process.env.SMTP_PORT,
     secure: false, 
     auth: {
-      user: process.env.SMTP_LOGIN, // Uses the special Brevo login string
-      pass: process.env.SMTP_PASSWORD, 
+      user: process.env.SMTP_LOGIN, 
+      pass: process.env.SMTP_PASSWORD,
     },
     family: 4 
   });
