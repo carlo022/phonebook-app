@@ -1,11 +1,9 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
-  // Create a transporter using your SMTP credentials
+  // Use the built-in 'gmail' service instead of manual host/port
   const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    secure: false, // true for port 465, false for port 587
+    service: 'gmail', 
     auth: {
       user: process.env.SMTP_EMAIL,
       pass: process.env.SMTP_PASSWORD,
