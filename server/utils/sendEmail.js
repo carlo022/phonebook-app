@@ -4,15 +4,16 @@ const sendEmail = async (options) => {
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
-    secure: false, // true for port 465, false for port 587
+    secure: false, 
     auth: {
-      user: process.env.SMTP_EMAIL,
-      pass: process.env.SMTP_PASSWORD,
+      user: process.env.SMTP_LOGIN, // Uses the special Brevo login string
+      pass: process.env.SMTP_PASSWORD, 
     },
+    family: 4 
   });
 
   const message = {
-    from: `"My Phonebook-App" <${process.env.SMTP_EMAIL}>`, // Make sure this matches your verified Brevo sender email
+    from: `"Polyglot Phonebook" <${process.env.SMTP_EMAIL}>`, // Uses your real verified email address
     to: options.email,
     subject: options.subject,
     text: options.message,
