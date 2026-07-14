@@ -21,8 +21,8 @@ const initializeDatabases = async () => {
   await connectMySQL();
   
   // Sync MySQL models (creates tables if they don't exist based on our User.js model)
-  // { alter: true } updates the database tables to match the models
-  await sequelize.sync({ alter: true }); 
+  // { force: true } drops and recreates the tables
+  await sequelize.sync({ force: true }); 
   console.log('✅ MySQL Models synchronized.');
 };
 
