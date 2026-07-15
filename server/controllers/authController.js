@@ -84,7 +84,13 @@ const loginUser = async (req, res) => {
 // @route   POST /api/auth/forgotpassword
 const forgotpassword = async (req, res) => {
   try {
-    const user = await User.findOne({ where: { email: req.body.email } });
+    const email = req.body.email?.trim().toLowerCase();
+
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    const user = await User.findOne({ where: { email } });
     
     if (!user) {
       return res.status(404).json({ message: 'There is no user with that email' });

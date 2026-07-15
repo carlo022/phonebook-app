@@ -2,21 +2,30 @@ const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
   try {
+    const smtpHost = process.env.SMTP_HOST;
+    const smtpPort = Number(process.env.SMTP_PORT || 587);
+    const smtpUser = process.env.SMTP_LOGIN || process.env.SMTP_USER || process.env.SMTP_EMAIL;
+    const smtpPass = process.env.SMTP_PASSWORD;
+
+    if (!smtpHost || !smtpUser || !smtpPass) {
+      throw new Error('Email configuration is incomplete. Check SMTP_HOST, SMTP_USER/SMTP_EMAIL, and SMTP_PASSWORD.');
+    }
+
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT, // Ensure this is 2525
-      secure: false,
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpPort === 465,
       auth: {
-        user: process.env.SMTP_LOGIN,
-        pass: process.env.SMTP_PASSWORD,
+        user: smtpUser,
+        pass: smtpPass,
       },
       family: 4,
-      connectionTimeout: 10000, // Force timeout in 10s so you don't wait 4 minutes
-      socketTimeout: 10000 
+      connectionTimeout: 10000,
+      socketTimeout: 10000,
     });
 
     const message = {
-      from: `"Polyglot Phonebook" <${process.env.SMTP_EMAIL}>`,
+      from: `"My Phonebook-App" <${process.env.SMTP_FROM || process.env.SMTP_EMAIL}>`,
       to: options.email,
       subject: options.subject,
       text: options.message,

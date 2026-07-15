@@ -30,18 +30,21 @@ initializeDatabases();
 
 // Import and mount the Auth Routes
 const authRoutes = require('./routes/authRoutes');
+app.use('/auth', authRoutes);
 app.use('/api/auth', authRoutes);
 
 // Test Route
 app.get('/api', (req, res) => {
-  res.json({ message: 'Phonebook Polyglot API is running!' });
+  res.json({ message: 'Phonebook API is running!' });
 });
 
 // Import and mount the User Routes
 const userRoutes = require('./routes/userRoutes');
+app.use('/users', userRoutes);
 app.use('/api/users', userRoutes);
 
 const contactRoutes = require('./routes/contactRoutes');
+app.use('/contacts', contactRoutes);
 app.use('/api/contacts', contactRoutes);
 
 const PORT = process.env.PORT;
