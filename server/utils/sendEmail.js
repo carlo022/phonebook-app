@@ -16,20 +16,21 @@ const sendEmail = async (options) => {
     const transporter = nodemailer.createTransport({
       host: smtpHost,
       port: smtpPort,
-      secure: false, // Mailtrap uses STARTTLS on port 587
+      secure: false, // Mailtrap uses STARTTLS
       auth: {
         user: smtpUser,
         pass: smtpPass,
       },
       tls: {
-        rejectUnauthorized: false, // Required for Mailtrap
+        rejectUnauthorized: false,
       },
-      connectionTimeout: 30000, // 30 seconds for Mailtrap connection
-      socketTimeout: 30000,     // 30 seconds for socket operations
+      connectionTimeout: 60000, // 60 seconds for connection
+      socketTimeout: 60000,
+      greetingTimeout: 60000,
     });
 
-    // Use api@mailtrap.io as the sender for Mailtrap sandbox
-    const fromEmail = process.env.SMTP_FROM || 'api@mailtrap.io';
+    // Use the configured sender email
+    const fromEmail = process.env.SMTP_FROM || process.env.SMTP_EMAIL || 'noreply@phonebook-app.com';
     const message = {
       from: fromEmail,
       to: options.email,
