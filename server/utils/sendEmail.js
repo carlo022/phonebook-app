@@ -11,26 +11,33 @@ const sendEmail = async (options) => {
       throw new Error('Email configuration is incomplete. Check SMTP_HOST, SMTP_USER/SMTP_EMAIL, and SMTP_PASSWORD.');
     }
 
+    console.log(`📧 Connecting to SMTP: ${smtpHost}:${smtpPort} as ${smtpUser}...`);
+
     const transporter = nodemailer.createTransport({
       host: smtpHost,
       port: smtpPort,
-      secure: smtpPort === 465,
+      secure: false, // Mailtrap uses STARTTLS on port 587
       auth: {
         user: smtpUser,
         pass: smtpPass,
       },
-      family: 4,
-      connectionTimeout: 10000,
-      socketTimeout: 10000,
+      tls: {
+        rejectUnauthorized: false, // Required for Mailtrap
+      },
+      connectionTimeout: 30000, // 30 seconds for Mailtrap connection
+      socketTimeout: 30000,     // 30 seconds for socket operations
     });
 
+    // Use api@mailtrap.io as the sender for Mailtrap sandbox
+    const fromEmail = process.env.SMTP_FROM || 'api@mailtrap.io';
     const message = {
-      from: `"My Phonebook-App" <${process.env.SMTP_FROM || process.env.SMTP_EMAIL}>`,
+      from: fromEmail,
       to: options.email,
       subject: options.subject,
       text: options.message,
     };
 
+    console.log(`📤 Sending email from ${fromEmail} to ${options.email}...`);
     const info = await transporter.sendMail(message);
     console.log('✅ Email sent successfully: %s', info.messageId);
     return info;

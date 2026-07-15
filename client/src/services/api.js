@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://phonebook-app-eulv.onrender.com/api',
-  timeout: 15000,
+  baseURL: import.meta.env.VITE_API_URL,
+  timeout: 35000, // 35 seconds for email operations
 });
 
 // Intercept requests to attach the Bearer token and normalize paths
